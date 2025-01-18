@@ -2,6 +2,7 @@ import os
 import pygame as pg
 import sys
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
@@ -18,5 +19,5 @@ def load_image(name, colorkey=None):
 
 
 def terminate():
-   pg.quit()
-   sys.exit()
+    pg.quit()
+    sys.exit()
