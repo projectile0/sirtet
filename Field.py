@@ -1,5 +1,7 @@
 from random import randint
+from pygame.locals import *
 
+fig_w, fig_h = 5, 5 #Шаблон размера фигуры
 
 class Field:  # Класс поля
     shapes = {
