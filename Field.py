@@ -5,6 +5,8 @@ fig_w, fig_h = 5, 5  # Шаблон размера фигуры
 
 
 class Field:  # Класс поля
+    blocks_falling = [2, 3]
+    blocks_static = [1]
     shapes = list({
                       'I': [0, 1],
                       'J': [0, 1, 2, 3],
@@ -27,16 +29,15 @@ class Field:  # Класс поля
     def update(self):  # Следующий кадр
         for y in range(self.height):
             for x in range(self.width):
-                match self.board[y][x]:
-                    case 2:
-                        if self.board[y + 1][x] == 1:
-                            self.new_figure()
+                if self.board[y][x] in self.blocks_falling:
+                    if self.board[y + 1][x] in self.blocks_static:
+                        self.new_figure()
 
     def new_figure(self):  # "Затвердевание старой и появление новой фигуры"
         for y in range(self.height):  # Фиксирование всех клеток
             for x in range(self.width):
-                if self.board[y][x] in [2, 3]:
-                    self.board[y][x] = 1
+                if self.board[y][x] in self.blocks_falling:
+                    self.board[y][x] = 1 # Изменение блока на статичный
 
         figure_next = choice(self.shapes)  # Выбор новой фигуры
         cur_turn = choice(figure_next[1])

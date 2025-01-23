@@ -20,10 +20,6 @@ def start_game():
             if event.type == pg.QUIT:
                 terminate()
         pg.display.flip()
-        last_move_down = time.time()  # Последнее движение вниз
-        last_side_move = time.time()  # Последнее движение в сторону
-        last_one = time.time()  # Последняя падавшая фигура
-        falling_down = False  # Падает ли сейчас
         falling_left = False  # Двигается ли влево
         falling_right = False  # Двигается ли вправо
         pg.time.Clock().tick(FPS)
