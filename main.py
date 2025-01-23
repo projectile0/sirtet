@@ -1,17 +1,13 @@
-from dataclasses import field
-
-from pygame.examples.scrap_clipboard import going
-
 from utils import terminate
 import pygame as pg
-import time, random, sys
+import time
 from pygame.locals import *
 from Field import Field
 
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
 block, zone_h, zone_w = 20, 20, 10  # к block привязываются остальные параметры игрового поля(zone_h, zone_w)
-side_freq, down_freq = 0.15, 0.1  # cкорость с которой поворачиваются и падает фигура
+side_freq, down_freq = 0.15, 0.1  # скорость с которой поворачиваются и падает фигура
 side_margin = int((WIDTH - zone_w * block) / 2)  # Константа. Определяет дистанцию между правой и левой сторонами окна
 top_margin = WIDTH - (zone_h * block) - 5  # Другая константа. Определяет дистанцию между верхом и низом сторонами окна
 
@@ -26,11 +22,10 @@ def start_game():
         pg.display.flip()
         last_move_down = time.time()  # Последнее движение вниз
         last_side_move = time.time()  # Последнее движение в сторону
-        last_one = time.time()  # Последняя падавшяя фигура
+        last_one = time.time()  # Последняя падавшая фигура
         falling_down = False  # Падает ли сейчас
         falling_left = False  # Двигается ли влево
-        falling_right = False  # Двигается ли вправ
-        f.new_figure()
+        falling_right = False  # Двигается ли вправо
         pg.time.Clock().tick(FPS)
 
 
