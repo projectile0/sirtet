@@ -24,7 +24,8 @@ class Field:  # Класс поля
             self.size = self.width, self.height = (10, 15)
         self.board = [[0] * self.width for _ in range(self.height)]
         self.new_board = [[0] * self.width for _ in range(self.height)]
-        self.new_figure()
+        self.shift_side = 0  # Сдвиг фигуры на x клеток("-" - влево, "+" - вправо)
+        self.new_figure()  # Появление первой фигуры
 
     def update(self):  # Следующий кадр
         self.new_board = [[0] * self.width for _ in range(self.height)]
@@ -34,7 +35,9 @@ class Field:  # Класс поля
                     cell_value = self.board[y][x]
                     if cell_value in [2, 3]:
                         if self.board[y + 1][x] == 1:
-                            raise OverlayError  # Обнаружение мешающего блока
+                            raise OverlayError  # Обнаружение мешающего блока снизу TODO учёт сдвига в сторону
+                        elif 0 <= x + self.shift_side < self.width:
+                            self.new_board[y + 1][x + self.shift_side] = self.board[y][x]
                         else:
                             self.new_board[y + 1][x] = self.board[y][x]  # Сдвиг блока вниз
                     elif self.board[y][x] in [1]:
@@ -50,7 +53,6 @@ class Field:  # Класс поля
             for x in range(self.width):
                 if self.board[y][x] in [2, 3]:
                     self.new_board[y][x] = 1
-
         figure_next = choice(self.shapes)  # Выбор новой фигуры, вид:(Буквенное обозначение, список всех её положений)
         cur_turn = choice(figure_next[1])
 
