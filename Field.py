@@ -31,18 +31,21 @@ class Field:  # Класс поля
         try:
             for y in range(self.height):
                 for x in range(self.width):
-                    match self.board[y][x]:
-                        case 2:
-                            if self.board[y + 1][x] == 1:
-                                raise OverlayError
-                            else:
-                                self.new_board[y + 1][x] = 2  # Сдвиг блока вниз
+                    cell_value = self.board[y][x]
+                    if cell_value in [2, 3]:
+                        if self.board[y + 1][x] == 1:
+                            raise OverlayError  # Обнаружение мешающего блока
+                        else:
+                            self.new_board[y + 1][x] = self.board[y][x]  # Сдвиг блока вниз
+                    elif self.board[y][x] in [1]:
+                        self.new_board[y][x] = cell_value
+
         except OverlayError:
             self.new_figure()
         self.board = deepcopy(self.new_board)
 
     def new_figure(self):  # "Затвердевание старой и появление новой фигуры"
-        self.new_board = deepcopy(self.board)
+        self.new_board = deepcopy(self.board)  # Откат изменений падения
         for y in range(self.height):  # Фиксирование всех клеток
             for x in range(self.width):
                 if self.board[y][x] in [2, 3]:

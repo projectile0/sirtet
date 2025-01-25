@@ -8,10 +8,12 @@ FPS = 25  # Кадры в секунду
 
 from pprint import pprint
 import time
+
+
 def start_game():
     points = 0  # Очки
     f = Field()
-    f.board = [[2, 0] * 5] + [[0] * 10 for _ in range(14)]
+    f.board = [[2, 1] * 5] + [[0] * 10 for _ in range(10)] + [[1] * 10 for _ in range(4)]
 
     while True:
         for event in pg.event.get():
