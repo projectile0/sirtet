@@ -6,14 +6,10 @@ from Field import Field
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
 
-from pprint import pprint
-import time
-
 
 def start_game():
     points = 0  # Очки
     f = Field()
-    f.board = [[2, 1] * 5] + [[0] * 10 for _ in range(10)] + [[1] * 10 for _ in range(4)]
 
     while True:
         for event in pg.event.get():
@@ -22,9 +18,6 @@ def start_game():
         pg.display.flip()
         falling_left = False  # Двигается ли влево
         falling_right = False  # Двигается ли вправо
-        pprint(f.board)
-        f.update()
-        time.sleep(1)
         pg.time.Clock().tick(FPS)
 
 
