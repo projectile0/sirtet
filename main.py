@@ -12,7 +12,6 @@ def start_game(screen):
     f = Field()
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(FALL_INTERVAL * 1000))
-    f.board = [[2, 1] * 5] + [[0] * 10 for _ in range(7)] + [[1, 1] * 5] + [[0] * 10 for _ in range(6)]
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:

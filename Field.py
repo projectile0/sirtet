@@ -1,23 +1,25 @@
 from copy import deepcopy
-from random import choice
-
-fig_w, fig_h = 5, 5  # Шаблон размера фигуры
+from random import choice, randint
 
 
 class Field:  # Класс поля
     blocks_falling = [2, 3]
     blocks_static = [1]
     shapes = list({
-                      'I': [0, 1],
-                      'J': [0, 1, 2, 3],
-                      'L': [0, 1, 2, 3],
-                      'O': [0],
-                      'S': [0, 1],
-                      'T': [0, 1, 2, 3],
-                      'Z': [0, 1]
-                  }.items())  # Названия всех вариантов фигур со всеми вариантами расположения,
+                      'I': [((0, -1), (0, 1), (0, 2)), ((-1, 0), (1, 0), (2, 0))],
+                      'J': [((0, -1), (1, -1), (0, 1)), ((-1, 0), (1, 0), (1, 1)),
+                            ((0, -1), (-1, 1), (0, 1)), ((-1, -1), (-1, 0), (1, 0))],
+                      'L': [((-1, -1), (0, -1), (0, 1)), ((1, 1), (-1, 0), (1, 0)),
+                            ((0, -1), (0, 1), (1, 1)), ((-1, 0), (1, 0), (-1, 1))],
+                      'O': [((1, 0), (0, 1), (1, 1))],
+                      'S': [((0, -1), (1, 0), (1, 1)), ((1, 0), (-1, 1), (0, 1))],
+                      'T': [((0, -1), (-1, 0), (1, 0)), ((0, -1), (1, 0), (0, 1)),
+                            ((-1, 0), (1, 0), (0, 1)), ((0, -1), (-1, 0), (0, 1))],
+                      'Z': [((1, -1), (1, 0), (0, 1))]
+                  }.items())  # Координаты относительно центра: (x, y)
 
-    # считать нулевым вертикальное положение "головой" вверх
+    # Названия всех вариантов фигур со всеми вариантами расположения,
+    # первым считать вертикальное положение "головой" вверх
 
     def __init__(self, size=(10, 15)):
         self.size = self.width, self.height = size
@@ -27,6 +29,7 @@ class Field:  # Класс поля
         self.new_board = [[0] * self.width for _ in range(self.height)]
         self.shift_side = 0  # Сдвиг фигуры на x клеток("-" - влево, "+" - вправо)
         self.new_figure()  # Появление первой фигуры
+        self.board = deepcopy(self.new_board)
 
     def update(self):  # Следующий кадр
         self.new_board = [[0] * self.width for _ in range(self.height)]
@@ -56,8 +59,12 @@ class Field:  # Класс поля
                 if self.board[y][x] in self.blocks_falling:
                     self.new_board[y][x] = 1
 
-        figure_next = choice(self.shapes)  # Выбор новой фигуры, вид:(Буквенное обозначение, список всех её положений)
-        cur_turn = choice(figure_next[1])
+        figure_type, possible_turns = choice(self.shapes)  # Выбор новой фигуры
+        cur_turn = randint(0, len(possible_turns) - 1)
+        center_x, center_y = self.figure_center = (self.width // 2 - 1, 1)
+        self.new_board[self.figure_center[1]][self.figure_center[0]] = 3  # Установка нового центра фигуры
+        for yd, xd in possible_turns[cur_turn]:
+            self.new_board[center_y + yd][center_x + xd] = 2
 
 
 class OverlayError(Exception):
