@@ -1,6 +1,5 @@
-from random import choice
-from pygame.locals import *
 from copy import deepcopy
+from random import choice
 
 fig_w, fig_h = 5, 5  # Шаблон размера фигуры
 
@@ -42,10 +41,11 @@ class Field:  # Класс поля
                             self.new_board[y + 1][x + self.shift_side] = self.board[y][x]
                         else:
                             self.new_board[y + 1][x] = self.board[y][x]  # Сдвиг блока вниз
-                    elif self.board[y][x] in self.blocks_static: # Перенос статичного блока на новую доску
+                    elif self.board[y][x] in self.blocks_static:  # Перенос статичного блока на новую доску
                         self.new_board[y][x] = cell_value
-
         except OverlayError:
+            self.new_figure()
+        except IndexError:  # TODO Переделать (убрать стандартную ошибку из except), может вызывать последующие затруднения
             self.new_figure()
         self.board = deepcopy(self.new_board)
 
