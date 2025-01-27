@@ -1,27 +1,24 @@
 from utils import terminate
 import pygame as pg
-import time
 from pygame.locals import *
 from Field import Field
 
+FALL_INTERVAL = 0.4  # Интервал между обновлением поля в секундах
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
-block, zone_h, zone_w = 20, 20, 10  # к block привязываются остальные параметры игрового поля(zone_h, zone_w)
-side_freq, down_freq = 0.15, 0.1  # скорость с которой поворачиваются и падает фигура
-side_margin = int((WIDTH - zone_w * block) / 2)  # Константа. Определяет дистанцию между правой и левой сторонами окна
-top_margin = WIDTH - (zone_h * block) - 5  # Другая константа. Определяет дистанцию между верхом и низом сторонами окна
-
 
 def start_game():
     points = 0  # Очки
     f = Field()
+    FALLEVENT = pg.USEREVENT + 1
+    pg.time.set_timer(FALLEVENT, int(FALL_INTERVAL * 1000))
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 terminate()
+            if event.type == FALLEVENT:
+                f.update()
         pg.display.flip()
-        falling_left = False  # Двигается ли влево
-        falling_right = False  # Двигается ли вправо
         pg.time.Clock().tick(FPS)
 
 

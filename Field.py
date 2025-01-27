@@ -1,5 +1,6 @@
 from random import choice
 from pygame.locals import *
+from copy import deepcopy
 
 fig_w, fig_h = 5, 5  # Шаблон размера фигуры
 
@@ -23,21 +24,41 @@ class Field:  # Класс поля
         self.size = self.width, self.height = size
         if self.width < 4 or self.height < 5:
             self.size = self.width, self.height = (10, 15)
-        self.board = [[0] * self.width] * self.height
-        self.new_figure()
+        self.board = [[0] * self.width for _ in range(self.height)]
+        self.new_board = [[0] * self.width for _ in range(self.height)]
+        self.shift_side = 0  # Сдвиг фигуры на x клеток("-" - влево, "+" - вправо)
+        self.new_figure()  # Появление первой фигуры
 
     def update(self):  # Следующий кадр
-        for y in range(self.height):
-            for x in range(self.width):
-                if self.board[y][x] in self.blocks_falling:
-                    if self.board[y + 1][x] in self.blocks_static:
-                        self.new_figure()
+        self.new_board = [[0] * self.width for _ in range(self.height)]
+        try:
+            for y in range(self.height):
+                for x in range(self.width):
+                    cell_value = self.board[y][x]
+                    if cell_value in self.blocks_falling:
+                        if self.board[y + 1][x] in self.blocks_static:
+                            raise OverlayError  # Обнаружение мешающего блока снизу TODO учёт сдвига в сторону
+                        elif 0 <= x + self.shift_side < self.width:
+                            self.new_board[y + 1][x + self.shift_side] = self.board[y][x]
+                        else:
+                            self.new_board[y + 1][x] = self.board[y][x]  # Сдвиг блока вниз
+                    elif self.board[y][x] in self.blocks_static: # Перенос статичного блока на новую доску
+                        self.new_board[y][x] = cell_value
+
+        except OverlayError:
+            self.new_figure()
+        self.board = deepcopy(self.new_board)
 
     def new_figure(self):  # "Затвердевание старой и появление новой фигуры"
+        self.new_board = deepcopy(self.board)  # Откат изменений падения
         for y in range(self.height):  # Фиксирование всех клеток
             for x in range(self.width):
                 if self.board[y][x] in self.blocks_falling:
-                    self.board[y][x] = 1 # Изменение блока на статичный
+                    self.new_board[y][x] = 1
 
-        figure_next = choice(self.shapes)  # Выбор новой фигуры
+        figure_next = choice(self.shapes)  # Выбор новой фигуры, вид:(Буквенное обозначение, список всех её положений)
         cur_turn = choice(figure_next[1])
+
+
+class OverlayError(Exception):
+    pass
