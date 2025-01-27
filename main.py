@@ -1,11 +1,14 @@
-from utils import terminate
-import pygame as pg
-from pygame.locals import *
-from Field import Field
 from pprint import pp
-FALL_INTERVAL = 0.7  # Интервал между обновлением поля в секундах
+
+import pygame as pg
+
+from Field import Field
+from utils import terminate
+
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
+FALL_INTERVAL = 0.7  # Интервал между обновлением поля в секундах
+
 
 def start_game(screen):
     points = 0  # Очки
@@ -18,7 +21,9 @@ def start_game(screen):
                 terminate()
             if event.type == FALLEVENT:
                 f.update()
-                pp(f.board)
+
+                pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
+
         pg.display.flip()
         pg.time.Clock().tick(FPS)
 
