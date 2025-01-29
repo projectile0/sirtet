@@ -7,21 +7,30 @@ from utils import terminate
 
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
-FALL_INTERVAL = 0.7  # Интервал между обновлением поля в секундах
+TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
 
 
 def start_game(screen):
     points = 0  # Очки
     f = Field()
     FALLEVENT = pg.USEREVENT + 1
-    pg.time.set_timer(FALLEVENT, int(FALL_INTERVAL * 1000))
+    pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
     while True:
         for event in pg.event.get():
-            if event.type == pg.QUIT:
+            if event.type == pg.QUIT:  # Выход
                 terminate()
-            if event.type == FALLEVENT:
+            if event.type == pg.KEYDOWN:  # Нажатие
+                if event.key in [pg.K_LEFT, pg.K_a]:
+                    f.shift_side -= 1
+                elif event.key in [pg.K_RIGHT, pg.K_d]:
+                    f.shift_side += 1
+            if event.type == pg.KEYUP:  # Отпускание
+                if event.key in [pg.K_LEFT, pg.K_a]:
+                    f.shift_side += 1
+                elif event.key in [pg.K_RIGHT, pg.K_d]:
+                    f.shift_side -= 1
+            if event.type == FALLEVENT:  # Периодическое падение блоков
                 f.update()
-
                 pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
 
         pg.display.flip()

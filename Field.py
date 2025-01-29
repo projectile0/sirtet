@@ -22,23 +22,25 @@ class Field:  # Класс поля
     # первым считать вертикальное положение "головой" вверх
 
     def __init__(self, size=(10, 15)):
-        self.size = self.width, self.height = size
-        if self.width < 4 or self.height < 5:
+        self.size = self.width, self.height = size # размеры
+        if self.width < 4 or self.height < 5: # проверка на слишком маленькое поле
             self.size = self.width, self.height = (10, 15)
-        self.board = [[0] * self.width for _ in range(self.height)]
-        self.new_board = [[0] * self.width for _ in range(self.height)]
+        self.board = self.clear_board()
+        self.new_board = self.clear_board()
         self.shift_side = 0  # Сдвиг фигуры на x клеток("-" - влево, "+" - вправо)
+        self.figure_center = (0, 0) # Переменная для сохранения центра фигуры
+
         self.new_figure()  # Появление первой фигуры
         self.board = deepcopy(self.new_board)
 
     def update(self):  # Следующий кадр
-        self.new_board = [[0] * self.width for _ in range(self.height)]
+        self.new_board = self.clear_board()
         try:
             for y in range(self.height):
                 for x in range(self.width):
                     cell_value = self.board[y][x]
                     if cell_value in self.blocks_falling:
-                        if self.board[y + 1][x] in self.blocks_static:
+                        if self.board[y + 1][x + self.shift_side] in self.blocks_static:
                             raise OverlayError  # Обнаружение мешающего блока снизу TODO учёт сдвига в сторону
                         elif 0 <= x + self.shift_side < self.width:
                             self.new_board[y + 1][x + self.shift_side] = self.board[y][x]
@@ -63,8 +65,11 @@ class Field:  # Класс поля
         cur_turn = randint(0, len(possible_turns) - 1)
         center_x, center_y = self.figure_center = (self.width // 2 - 1, 1)
         self.new_board[self.figure_center[1]][self.figure_center[0]] = 3  # Установка нового центра фигуры
-        for yd, xd in possible_turns[cur_turn]:
+        for yd, xd in possible_turns[cur_turn]:  # расстановка остальных блоков фигуры
             self.new_board[center_y + yd][center_x + xd] = 2
+
+    def clear_board(self): # Возвращает пустую таблицу
+        return [[0] * self.width for _ in range(self.height)]
 
 
 class OverlayError(Exception):
