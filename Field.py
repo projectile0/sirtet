@@ -22,13 +22,13 @@ class Field:  # Класс поля
     # первым считать вертикальное положение "головой" вверх
 
     def __init__(self, size=(10, 15)):
-        self.size = self.width, self.height = size # размеры
-        if self.width < 4 or self.height < 5: # проверка на слишком маленькое поле
+        self.size = self.width, self.height = size  # размеры
+        if self.width < 4 or self.height < 5:  # проверка на слишком маленькое поле
             self.size = self.width, self.height = (10, 15)
         self.board = self.clear_board()
         self.new_board = self.clear_board()
         self.shift_side = 0  # Сдвиг фигуры на x клеток("-" - влево, "+" - вправо)
-        self.figure_center = (0, 0) # Переменная для сохранения центра фигуры
+        self.figure_center = (0, 0)  # Переменная для сохранения центра фигуры
 
         self.new_figure()  # Появление первой фигуры
         self.board = deepcopy(self.new_board)
@@ -41,14 +41,14 @@ class Field:  # Класс поля
                     cell_value = self.board[y][x]
                     if cell_value in self.blocks_falling:
                         if self.board[y + 1][x + self.shift_side] in self.blocks_static:
-                            raise OverlayError  # Обнаружение мешающего блока снизу TODO учёт сдвига в сторону
+                            raise OverlayError  # Обнаружение мешающего блока снизу TODO учёт сдвига в сторону при проверке
                         elif 0 <= x + self.shift_side < self.width:
                             self.new_board[y + 1][x + self.shift_side] = self.board[y][x]
                         else:
                             self.new_board[y + 1][x] = self.board[y][x]  # Сдвиг блока вниз
                     elif self.board[y][x] in self.blocks_static:  # Перенос статичного блока на новую доску
                         self.new_board[y][x] = cell_value
-        except OverlayError:
+        except OverlayError: # TODO При столкновении со стеной остановка, а не фиксация
             self.new_figure()
         except IndexError:  # TODO Переделать (убрать стандартную ошибку из except), может вызывать последующие затруднения
             self.new_figure()
@@ -68,7 +68,7 @@ class Field:  # Класс поля
         for yd, xd in possible_turns[cur_turn]:  # расстановка остальных блоков фигуры
             self.new_board[center_y + yd][center_x + xd] = 2
 
-    def clear_board(self): # Возвращает пустую таблицу
+    def clear_board(self):  # Возвращает пустую таблицу
         return [[0] * self.width for _ in range(self.height)]
 
 
