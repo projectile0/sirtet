@@ -12,7 +12,7 @@ TIME_FALL = 0.7  # Интервал между обновлением табли
 
 def start_game(screen):
     points = 0  # Очки
-    f = Field()
+    f = Field((8, 12))
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
     while True:

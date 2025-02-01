@@ -27,13 +27,12 @@ class Field:  # Класс поля
         self.shift_side = 0  # Сдвиг фигуры на x клеток("-" - влево, "+" - вправо)
         self.figure_center = (0, 0)  # Переменная для сохранения центра фигуры
         self.cur_figure_turn = 0  # Номер варианта поворота фигуры
-        self.all_turns = ()  # Переменная для записи всех вариантов положения фигуры в виде координат блоков относительно центра
+        self.all_turns = ()  # Запись всех вариантов положения фигуры в виде координат блоков относительно центра
 
         self.new_figure()  # Появление первой фигуры
 
     def update(self):  # Следующий кадр
         self.figure_fall()
-
 
     def figure_fall(self):
         cells_checked = set(map(self.empty_block, self.all_turns[self.cur_figure_turn]))
@@ -42,20 +41,24 @@ class Field:  # Класс поля
             self.figure_center = x + self.shift_side, y + 1
         elif 0 not in cells_checked:
             self.figure_center = x, y + 1
+        else:
+            self.fix_board()
+            self.new_figure()
 
     def empty_block(self, coords):  # Проверка на нахождение в таблице и пустоту клетки
         x = coords[0] + self.figure_center[0]
         y = coords[1] + self.figure_center[1]
-        if 0 <= y < self.height:
+        if 0 <= y + 1 < self.height:
             if 0 <= x + self.shift_side < self.width:
-                if self.board_fixed[y][x] == 0:
+                if self.board_fixed[y + 1][x + self.shift_side] == 0:
                     return 2
             if 0 <= x < self.width:
-                if self.board_fixed[y][x] == 0:
+                if self.board_fixed[y + 1][x] == 0:
                     return 1
         return 0
 
-    # empty_block - (0: Клетка не пустая/вне таблицы по координате Y; 1: В таблице, пустая без сдвига; 2: В таблице, пустая клетка)
+    # empty_block:
+    # (0: Клетка не пустая/вне таблицы по координате Y; 1: В таблице, пустая без сдвига; 2: В таблице, пустая клетка)
     # Вход координат относительно центра фигуры
 
     def new_figure(self):  # Появление новой фигуры
@@ -64,8 +67,9 @@ class Field:  # Класс поля
         self.figure_center = (self.width // 2 - 1, 1)
 
     def fix_board(self):  # Фиксация текущей фигуры
+        c_x, c_y = self.figure_center  # центр фигуры
         for x, y in self.all_turns[self.cur_figure_turn]:
-            self.board_fixed[y][x] = 1
+            self.board_fixed[y + c_y][x + c_x] = 1
 
     def board_clear(self):  # Возвращает пустую таблицу
         return [[0] * self.width for _ in range(self.height)]
