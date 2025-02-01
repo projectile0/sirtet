@@ -31,7 +31,8 @@ def start_game(screen):
                     f.shift_side -= 1
             if event.type == FALLEVENT:  # Периодическое падение блоков
                 f.update()
-                pp(f.board)  # Отображение таблицы в консоли(ТЕСТ) TODO Убрать тест
+                print(f.figure_center)
+                pp(f.board_fixed)  # Отображение таблицы в консоли(ТЕСТ) TODO Убрать тест
 
         pg.display.flip()
         pg.time.Clock().tick(FPS)
