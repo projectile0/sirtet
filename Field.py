@@ -37,20 +37,22 @@ class Field:  # Класс поля
     def figure_rotate(self):
         blocks = self.all_turns[(self.cur_figure_turn + 1) % len(self.all_turns)]
         x, y = self.figure_center
-        cells_checked = set(map(self.empty_block, blocks))
-        if all(cells_checked):
+        cells_empty = all(set(map(self.empty_block, blocks)))
+        if cells_empty:
             self.cur_figure_turn = (self.cur_figure_turn + 1) % len(self.all_turns)
 
     def figure_shift(self):
         blocks = self.all_turns[self.cur_figure_turn]
         x, y = self.figure_center
-        cells_checked = set(map(lambda cc: self.empty_block((cc[0] + self.shift_side, cc[1])), blocks))
+        cells_empty = all(set(map(lambda cc: self.empty_block((cc[0] + self.shift_side, cc[1])), blocks)))
+        if cells_empty:
+            self.figure_center = (x + self.shift_side, y)
 
     def figure_fall(self):
         blocks = self.all_turns[self.cur_figure_turn]
         x, y = self.figure_center
-        cells_checked = set(map(lambda cc: self.empty_block((cc[0], cc[1] + 1)), blocks))
-        if all(cells_checked):  # Проверка на пустоту под блоком
+        cells_empty = all(set(map(lambda cc: self.empty_block((cc[0], cc[1] + 1)), blocks)))
+        if cells_empty:  # Проверка на пустоту под блоком
             self.figure_center = (x, y + 1)
             return
         self.fix_board()

@@ -8,16 +8,18 @@ from utils import terminate
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
 TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
-TIME_SHIFT = 0.4 # Интервал между сдвигами фигуры в сторону
+TIME_SHIFT = 0.4  # Интервал между сдвигами фигуры в сторону
 
 
 def start_game(screen):
     points = 0  # Очки
     f = Field((8, 12))
-    FALLEVENT = pg.USEREVENT + 1 # Создание ивентов и постановка таймера их обновления
+
+    FALLEVENT = pg.USEREVENT + 1  # Создание ивентов и постановка таймера их обновления
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
     SHIFTEVENT = pg.USEREVENT + 2
     pg.time.set_timer(SHIFTEVENT, int(TIME_SHIFT * 1000))
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # Выход
