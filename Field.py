@@ -19,6 +19,7 @@ class Field:  # Класс поля
     # первым считать вертикальное положение "головой" вверх
 
     def __init__(self, size=(10, 15)):
+        self.points = 0 # очки
         self.size = self.width, self.height = size  # размеры
         if self.width < 4 or self.height < 5:  # проверка на слишком маленькие параметры поля
             self.size = self.width, self.height = (10, 15)
@@ -33,11 +34,10 @@ class Field:  # Класс поля
 
     def update(self):  # Следующий кадр
         self.figure_fall()
-        return self.check_line() # Возврат points
+        return self.check_line()  # Возврат points
 
     def figure_rotate(self):
         blocks = self.all_turns[(self.cur_figure_turn + 1) % len(self.all_turns)]
-        x, y = self.figure_center
         cells_empty = all(set(map(self.empty_block, blocks)))
         if cells_empty:
             self.cur_figure_turn = (self.cur_figure_turn + 1) % len(self.all_turns)
@@ -69,14 +69,11 @@ class Field:  # Класс поля
         return False
 
     def check_line(self):
-        points = 0
         for y in self.board_fixed:
             if all(y):
                 self.board_fixed.remove(y)
                 self.board_fixed.insert(0, [0] * self.width)
-                points += 1
-        return points * 100
-
+                self.points += 100
 
 
     # empty_block:
@@ -87,6 +84,10 @@ class Field:  # Класс поля
         self.all_turns = choice(self.shapes)[1]  # Выбор новой фигуры, запись положений всех блоков относительно центра
         self.cur_figure_turn = randint(0, len(self.all_turns) - 1)
         self.figure_center = (self.width // 2 - 1, 1)
+        x, y = self.figure_center
+        self.over =  any(self.board_fixed[y + b_y][x + b_x] for b_x, b_y in self.all_turns[self.cur_figure_turn])
+
+
 
     def fix_board(self):  # Фиксация текущей фигуры
         c_x, c_y = self.figure_center  # центр фигуры
