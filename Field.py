@@ -33,6 +33,7 @@ class Field:  # Класс поля
 
     def update(self):  # Следующий кадр
         self.figure_fall()
+        return self.check_line() # Возврат points
 
     def figure_rotate(self):
         blocks = self.all_turns[(self.cur_figure_turn + 1) % len(self.all_turns)]
@@ -66,6 +67,17 @@ class Field:  # Класс поля
                 if self.board_fixed[y][x] == 0:
                     return True
         return False
+
+    def check_line(self):
+        points = 0
+        for y in self.board_fixed:
+            if all(y):
+                self.board_fixed.remove(y)
+                self.board_fixed.insert(0, [0] * self.width)
+                points += 1
+        return points * 100
+
+
 
     # empty_block:
     # (0: Клетка не пустая/вне таблицы по координате Y; 1: В таблице, пустая без сдвига; 2: В таблице, пустая клетка)

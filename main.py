@@ -19,7 +19,6 @@ def start_game(screen):
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
     SHIFTEVENT = pg.USEREVENT + 2
     pg.time.set_timer(SHIFTEVENT, int(TIME_SHIFT * 1000))
-
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # Выход
@@ -39,8 +38,9 @@ def start_game(screen):
             if event.type == SHIFTEVENT:
                 f.figure_shift()
             if event.type == FALLEVENT:  # Периодическое падение блоков
-                f.update()
-                print(f.figure_center, f.cur_figure_turn)
+                points += f.update()  # Принимает изменение поинтов из Field
+
+                print(f.figure_center, f.cur_figure_turn, points)
                 pp(f.board_fixed)  # Отображение таблицы в консоли(ТЕСТ) TODO Убрать тест
 
         pg.display.flip()
