@@ -8,13 +8,16 @@ from utils import terminate
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
 TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
+TIME_SHIFT = 0.4 # Интервал между сдвигами фигуры в сторону
 
 
 def start_game(screen):
     points = 0  # Очки
     f = Field((8, 12))
-    FALLEVENT = pg.USEREVENT + 1
+    FALLEVENT = pg.USEREVENT + 1 # Создание ивентов и постановка таймера их обновления
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
+    SHIFTEVENT = pg.USEREVENT + 2
+    pg.time.set_timer(SHIFTEVENT, int(TIME_SHIFT * 1000))
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # Выход
@@ -24,14 +27,18 @@ def start_game(screen):
                     f.shift_side -= 1
                 elif event.key in [pg.K_RIGHT, pg.K_d]:
                     f.shift_side += 1
+                elif event.key in [pg.K_UP, pg.K_w]:
+                    f.figure_rotate()
             if event.type == pg.KEYUP:  # Отпускание
                 if event.key in [pg.K_LEFT, pg.K_a]:
                     f.shift_side += 1
                 elif event.key in [pg.K_RIGHT, pg.K_d]:
                     f.shift_side -= 1
+            if event.type == SHIFTEVENT:
+                f.figure_shift()
             if event.type == FALLEVENT:  # Периодическое падение блоков
                 f.update()
-                print(f.figure_center)
+                print(f.figure_center, f.cur_figure_turn)
                 pp(f.board_fixed)  # Отображение таблицы в консоли(ТЕСТ) TODO Убрать тест
 
         pg.display.flip()

@@ -34,28 +34,36 @@ class Field:  # Класс поля
     def update(self):  # Следующий кадр
         self.figure_fall()
 
-    def figure_fall(self):
-        cells_checked = set(map(self.empty_block, self.all_turns[self.cur_figure_turn]))
+    def figure_rotate(self):
+        blocks = self.all_turns[(self.cur_figure_turn + 1) % len(self.all_turns)]
         x, y = self.figure_center
-        if len(cells_checked) == 1 and cells_checked.pop() == 2:  # Перемещение центра на основе границ
-            self.figure_center = x + self.shift_side, y + 1
-        elif 0 not in cells_checked:
-            self.figure_center = x, y + 1
-        else:
-            self.fix_board()
-            self.new_figure()
+        cells_checked = set(map(self.empty_block, blocks))
+        if all(cells_checked):
+            self.cur_figure_turn = (self.cur_figure_turn + 1) % len(self.all_turns)
+
+    def figure_shift(self):
+        blocks = self.all_turns[self.cur_figure_turn]
+        x, y = self.figure_center
+        cells_checked = set(map(lambda cc: self.empty_block((cc[0] + self.shift_side, cc[1])), blocks))
+
+    def figure_fall(self):
+        blocks = self.all_turns[self.cur_figure_turn]
+        x, y = self.figure_center
+        cells_checked = set(map(lambda cc: self.empty_block((cc[0], cc[1] + 1)), blocks))
+        if all(cells_checked):  # Проверка на пустоту под блоком
+            self.figure_center = (x, y + 1)
+            return
+        self.fix_board()
+        self.new_figure()
 
     def empty_block(self, coords):  # Проверка на нахождение в таблице и пустоту клетки
         x = coords[0] + self.figure_center[0]
         y = coords[1] + self.figure_center[1]
-        if 0 <= y + 1 < self.height:
-            if 0 <= x + self.shift_side < self.width:
-                if self.board_fixed[y + 1][x + self.shift_side] == 0:
-                    return 2
+        if 0 <= y < self.height:
             if 0 <= x < self.width:
-                if self.board_fixed[y + 1][x] == 0:
-                    return 1
-        return 0
+                if self.board_fixed[y][x] == 0:
+                    return True
+        return False
 
     # empty_block:
     # (0: Клетка не пустая/вне таблицы по координате Y; 1: В таблице, пустая без сдвига; 2: В таблице, пустая клетка)
