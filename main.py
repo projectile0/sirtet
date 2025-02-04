@@ -5,16 +5,18 @@ import pygame
 from Field import Field
 from utils import terminate
 
+# Параметры экрана
 WIDTH, HEIGHT = SIZE = 960, 720
 FPS = 25  # Кадры в секунду
 TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 # холст для таблицы
 width_ts = 400
 height_ts = 500
 test_table = pygame.Surface((width_ts, height_ts))
-test_table.fill('White')
+test_table.fill('Red')
 
 
 def start_game(screen):
@@ -42,7 +44,7 @@ def start_game(screen):
                 f.update()
                 pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
         screen.blit(test_table, (300, 150))
-        b.render(screen)
+        b.render(test_table)
         pg.display.flip()
         pg.time.Clock().tick(FPS)
 
@@ -72,6 +74,7 @@ class Board:    # Таблица
 
 
 def main():
+    global screen
     pg.init()
     screen = pg.display.set_mode(SIZE)
     start_game(screen)
