@@ -16,6 +16,8 @@ def start_game(screen):
     f = Field()
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(FALL_INTERVAL * 1000))
+    screen.fill((255, 255, 255))
+    score_displayed = False #Расположен ли экран с очками или нет
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -24,6 +26,15 @@ def start_game(screen):
                 f.update()
 
                 pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
+
+            if event.type == pg.QUIT:
+                terminate()
+            if event.type == pg.MOUSEBUTTONDOWN: # Экран выводится по нажатию кнопки (Сделал для того, чтоб хотяб какое то событие было)
+                if event.button == 1:  # Левая кнопка мыши
+                    score_displayed = True  # Устанавливаем флаг, чтобы показать экран счета
+
+            if score_displayed: # Проверка флага
+                score_screen(screen) # Вывод
 
         pg.display.flip()
         pg.time.Clock().tick(FPS)
@@ -47,7 +58,6 @@ def main():
     pg.init()
     screen = pg.display.set_mode(SIZE)
     start_game(screen)
-
 
 if __name__ == '__main__':
     main()
