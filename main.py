@@ -27,6 +27,8 @@ def start_game(screen):
             if event.type == FALLEVENT:
                 f.update()
                 pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
+            if event.type == pg.MOUSEBUTTONUP:
+                score_screen(screen)
 
         pg.display.flip()
         pg.time.Clock().tick(FPS)
