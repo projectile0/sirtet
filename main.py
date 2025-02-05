@@ -58,7 +58,7 @@ def main():
     pg.init()
     screen = pg.display.set_mode(SIZE)
     start_game(screen)
-    score_screen(screen)  # Запуск таблицы
+    score_screen(screen)
 
 
 if __name__ == '__main__':
