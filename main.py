@@ -23,7 +23,7 @@ def start_game(screen):
     points = 0  # Очки
     f = Field()
     b = Board(10, 17)
-    b.set_view(0, 0, 30)
+    b.set_view(30)
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
     im = load_image('background.jpg')
@@ -58,22 +58,18 @@ class Board:    # Таблица
         self.height = height
         self.board = [[0] * width for _ in range(height)]
         # значения по умолчанию
-        self.left = 10
-        self.top = 10
         self.cell_size = 30
 
     # Параметры
-    def set_view(self, left, top, cell_size):
-        self.left = left
-        self.top = top
+    def set_view(self, cell_size):
         self.cell_size = cell_size
 
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
                 pg.draw.rect(screen, WHITE,
-                                 (self.left + self.cell_size * x,
-                                  self.top + self.cell_size * y,
+                                 (self.cell_size * x,
+                                  self.cell_size * y,
                                   self.cell_size, self.cell_size), 1)
 
 
