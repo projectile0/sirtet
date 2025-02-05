@@ -26,7 +26,7 @@ def start_game(screen):
     b.set_view(0, 0, 30)
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
-    im = load_image('Fon_Tetris.jpg')
+    im = load_image('background.jpg')
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # Выход
