@@ -7,26 +7,29 @@ from utils import load_image
 
 # Параметры экрана
 WIDTH, HEIGHT = SIZE = 960, 720
+B_WIDTH, B_HEIGHT = B_SIZE = 10, 15
 FPS = 25  # Кадры в секунду
 TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 # холст для таблицы
-width_ts = 300
-height_ts = 510
-test_table = pg.Surface((width_ts, height_ts))
-test_table.fill('Black')
+width_ts = int(min(WIDTH, HEIGHT) * 0.6)
+height_ts = int(min(WIDTH, HEIGHT) * 0.9)
+print(width_ts, height_ts)
+surface_game = pg.Surface((width_ts, height_ts))
+surface_game.fill('Black')
 
 
-def start_game(screen):
+def start_game():
     points = 0  # Очки
     f = Field()
-    b = Board(10, 17)
-    b.set_view(30)
+    b = Board(B_WIDTH, B_HEIGHT)
+    b.set_view(min(width_ts // B_WIDTH, height_ts // B_HEIGHT))
+    print(WIDTH // B_WIDTH)
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
-    im = load_image('background.jpg')
+    im_background = load_image('background.jpg')
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # Выход
@@ -44,10 +47,10 @@ def start_game(screen):
             if event.type == FALLEVENT:  # Периодическое падение блоков
                 f.update()
                 pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
-        screen.blit(im, (-25, 0))
-        Name_game(screen)
-        screen.blit(test_table, (346, 150))
-        b.render(test_table)
+        screen.blit(im_background, (-25, 0))
+        render_game_name(screen)
+        screen.blit(surface_game, (0, 0))
+        b.render(surface_game)
         pg.display.flip()
         pg.time.Clock().tick(FPS)
 
@@ -73,7 +76,7 @@ class Board:    # Таблица
                                   self.cell_size, self.cell_size), 1)
 
 
-def Name_game(screen):    # Название Игры
+def render_game_name(screen):    # Название Игры
     font = pg.font.Font(None, 50)
     text = font.render("Tetris", True, ('Green'))
     text_x = 490 - text.get_width() // 2
@@ -85,7 +88,7 @@ def main():
     global screen
     pg.init()
     screen = pg.display.set_mode(SIZE)
-    start_game(screen)
+    start_game()
 
 
 if __name__ == '__main__':
