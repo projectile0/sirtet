@@ -46,7 +46,7 @@ def score_screen(screen):  # Окно с выводом ников и очков
     conn.close()  # Закрытие связи
     pg.display.flip()
     waiting = True
-    while waiting: # Цикл в ожидании нажатия
+    while waiting:  # Цикл в ожидании нажатия
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 terminate()
@@ -58,7 +58,7 @@ def main():
     pg.init()
     screen = pg.display.set_mode(SIZE)
     start_game(screen)
-    score_screen(screen)
+    score_screen(screen)  # Запуск таблицы
 
 
 if __name__ == '__main__':
