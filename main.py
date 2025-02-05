@@ -16,7 +16,6 @@ BLACK = (0, 0, 0)
 # холст для таблицы
 width_ts = int(min(WIDTH, HEIGHT) * 0.6)
 height_ts = int(min(WIDTH, HEIGHT) * 0.9)
-print(width_ts, height_ts)
 surface_game = pg.Surface((width_ts, height_ts))
 surface_game.fill('Black')
 
@@ -26,7 +25,6 @@ def start_game():
     f = Field()
     b = Board(B_WIDTH, B_HEIGHT)
     b.set_view(min(width_ts // B_WIDTH, height_ts // B_HEIGHT))
-    print(WIDTH // B_WIDTH)
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
     im_background = load_image('background.jpg')
