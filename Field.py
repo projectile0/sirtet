@@ -19,7 +19,7 @@ class Field:  # Класс поля
     # первым считать вертикальное положение "головой" вверх
 
     def __init__(self, size=(10, 15)):
-        self.points = 0 # очки
+        self.points = 0  # очки
         self.size = self.width, self.height = size  # размеры
         if self.width < 4 or self.height < 5:  # проверка на слишком маленькие параметры поля
             self.size = self.width, self.height = (10, 15)
@@ -75,7 +75,6 @@ class Field:  # Класс поля
                 self.board_fixed.insert(0, [0] * self.width)
                 self.points += 100
 
-
     # empty_block:
     # (0: Клетка не пустая/вне таблицы по координате Y; 1: В таблице, пустая без сдвига; 2: В таблице, пустая клетка)
     # Вход координат относительно центра фигуры
@@ -85,9 +84,7 @@ class Field:  # Класс поля
         self.cur_figure_turn = randint(0, len(self.all_turns) - 1)
         self.figure_center = (self.width // 2 - 1, 1)
         x, y = self.figure_center
-        self.over =  any(self.board_fixed[y + b_y][x + b_x] for b_x, b_y in self.all_turns[self.cur_figure_turn])
-
-
+        self.over = any(self.board_fixed[y + b_y][x + b_x] for b_x, b_y in self.all_turns[self.cur_figure_turn])
 
     def fix_board(self):  # Фиксация текущей фигуры
         c_x, c_y = self.figure_center  # центр фигуры

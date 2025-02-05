@@ -3,7 +3,7 @@ import pygame as pg
 import sys
 
 
-def load_image(name, colorkey=None): # Загрузить изображение из папки data
+def load_image(name, colorkey=None):  # Загрузить изображение из папки data
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
         raise FileNotFoundError
@@ -18,6 +18,6 @@ def load_image(name, colorkey=None): # Загрузить изображение
     return image
 
 
-def terminate(): # Закрыть программу
+def terminate():  # Закрыть программу
     pg.quit()
     sys.exit()
