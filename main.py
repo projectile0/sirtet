@@ -1,9 +1,9 @@
 from pprint import pp
 
 import pygame as pg
-import pygame
 from Field import Field
 from utils import terminate
+from utils import load_image
 
 # Параметры экрана
 WIDTH, HEIGHT = SIZE = 960, 720
@@ -13,19 +13,20 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 # холст для таблицы
-width_ts = 400
-height_ts = 500
-test_table = pygame.Surface((width_ts, height_ts))
-test_table.fill('Red')
+width_ts = 300
+height_ts = 510
+test_table = pg.Surface((width_ts, height_ts))
+test_table.fill('Black')
 
 
 def start_game(screen):
     points = 0  # Очки
     f = Field()
     b = Board(10, 17)
-    b.set_view(10, 10, 20)
+    b.set_view(0, 0, 30)
     FALLEVENT = pg.USEREVENT + 1
     pg.time.set_timer(FALLEVENT, int(TIME_FALL * 1000))
+    im = load_image('Fon_Tetris.jpg')
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:  # Выход
@@ -43,7 +44,9 @@ def start_game(screen):
             if event.type == FALLEVENT:  # Периодическое падение блоков
                 f.update()
                 pp(f.board)  # Отображение таблицы в консоли(ТЕСТ)
-        screen.blit(test_table, (300, 150))
+        screen.blit(im, (-25, 0))
+        Name_game(screen)
+        screen.blit(test_table, (346, 150))
         b.render(test_table)
         pg.display.flip()
         pg.time.Clock().tick(FPS)
@@ -59,6 +62,7 @@ class Board:    # Таблица
         self.top = 10
         self.cell_size = 30
 
+    # Параметры
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
@@ -67,10 +71,18 @@ class Board:    # Таблица
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
-                pygame.draw.rect(screen, WHITE,
+                pg.draw.rect(screen, WHITE,
                                  (self.left + self.cell_size * x,
                                   self.top + self.cell_size * y,
                                   self.cell_size, self.cell_size), 1)
+
+
+def Name_game(screen):    # Название Игры
+    font = pg.font.Font(None, 50)
+    text = font.render("Tetris", True, ('Green'))
+    text_x = 490 - text.get_width() // 2
+    text_y = 100 - text.get_height() // 2
+    screen.blit(text, (text_x, text_y))
 
 
 def main():
