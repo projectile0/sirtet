@@ -2,13 +2,12 @@ from random import choice, randint
 
 import pygame as pg
 
-from utils import WHITE
+from utils import COLOR_FIGURE, COLOR_BACKGROUND
 
 
 class Tetris:
     def __init__(self, f_size=(10, 15)):
-        self.field = Field(f_size) # Создание поля
-
+        self.field = Field(f_size)  # Создание поля
         # значения по умолчанию
         self.cell_size = 30
 
@@ -17,12 +16,19 @@ class Tetris:
         self.cell_size = cell_size
 
     def render(self, screen):
+        screen.fill(COLOR_BACKGROUND)
         for y in range(self.field.height):
             for x in range(self.field.width):
-                pg.draw.rect(screen, WHITE,
-                             (self.cell_size * x,
-                              self.cell_size * y,
-                              self.cell_size, self.cell_size), 1)
+                cell_value = self.field.board_fixed[y][x]
+                if cell_value == 0:
+                    pg.draw.rect(screen, COLOR_FIGURE,
+                                 (self.cell_size * x, self.cell_size * y, self.cell_size, self.cell_size), 1)
+                elif cell_value == 1:
+                    pg.draw.rect(screen, COLOR_FIGURE,
+                                 (self.cell_size * x, self.cell_size * y, self.cell_size, self.cell_size))
+        f_x, f_y = self.field.figure_center # Центр фигуры
+        for x, y in self.field.all_turns[self.field.cur_figure_turn]: # Отрисовка падающей фигуры
+            pg.draw.rect(screen, COLOR_FIGURE, (self.cell_size * (x + f_x), self.cell_size * (y + f_y), self.cell_size, self.cell_size))
 
 
 class Field:  # Класс поля
@@ -31,7 +37,7 @@ class Field:  # Класс поля
                       'J': [((0, -1), (1, -1), (0, 0), (0, 1)), ((-1, 0), (0, 0), (1, 0), (1, 1)),
                             ((0, -1), (0, 0), (-1, 1), (0, 1)), ((-1, -1), (0, 0), (-1, 0), (1, 0))],
                       'L': [((-1, -1), (0, -1), (0, 0), (0, 1)), ((1, 1), (0, 0), (-1, 0), (1, 0)),
-                            ((0, -1), (0, 0), (0, 1), (1, 1)), ((-1, 0), (0, 0), (1, 0), (-1, 1))],
+                            ((0, -1), (0, 0), (0, 1), (1, 1)), ((-1, 0), (0, 0), (1, 0), (1, -1))],
                       'O': [((0, 0), (1, 0), (0, 1), (1, 1))],
                       'S': [((0, -1), (0, 0), (1, 0), (1, 1)), ((0, 0), (1, 0), (-1, 1), (0, 1))],
                       'T': [((0, -1), (-1, 0), (0, 0), (1, 0)), ((0, -1), (0, 0), (1, 0), (0, 1)),
@@ -43,7 +49,7 @@ class Field:  # Класс поля
     # первым считать вертикальное положение "головой" вверх
 
     def __init__(self, size):
-        self.points = 0  # очки
+        self.score = 0
         self.size = self.width, self.height = size  # размеры
         if self.width < 4 or self.height < 5:  # проверка на слишком маленькие параметры поля
             self.size = self.width, self.height = (10, 15)
@@ -58,7 +64,7 @@ class Field:  # Класс поля
 
     def update(self):  # Следующий кадр
         self.figure_fall()
-        return self.check_line()  # Возврат points
+        self.check_line()  # Проверяет на составление линии
 
     def figure_rotate(self):
         blocks = self.all_turns[(self.cur_figure_turn + 1) % len(self.all_turns)]
@@ -97,7 +103,7 @@ class Field:  # Класс поля
             if all(y):
                 self.board_fixed.remove(y)
                 self.board_fixed.insert(0, [0] * self.width)
-                self.points += 100
+                self.score += 100
 
     # empty_block:
     # (0: Клетка не пустая/вне таблицы по координате Y; 1: В таблице, пустая без сдвига; 2: В таблице, пустая клетка)
@@ -108,7 +114,7 @@ class Field:  # Класс поля
         self.cur_figure_turn = randint(0, len(self.all_turns) - 1)
         self.figure_center = (self.width // 2 - 1, 1)
         x, y = self.figure_center
-        self.over = any(self.board_fixed[y + b_y][x + b_x] for b_x, b_y in self.all_turns[self.cur_figure_turn])
+        self.over = any(list(self.board_fixed[y + b_y][x + b_x] for b_x, b_y in self.all_turns[self.cur_figure_turn]))
 
     def fix_board(self):  # Фиксация текущей фигуры
         c_x, c_y = self.figure_center  # центр фигуры
