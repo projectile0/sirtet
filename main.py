@@ -12,9 +12,11 @@ from utils import terminate, COLOR_BACKGROUND
 WIDTH, HEIGHT = SIZE = 960, 720
 B_WIDTH, B_HEIGHT = B_SIZE = 10, 15
 FPS = 30  # Кадры в секунду
-TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
-TIME_SHIFT = 0.4  # Интервал между сдвигами фигуры в сторону
+TIME_FALL = 1.4  # Интервал между обновлением таблицы в секундах
+TIME_SHIFT = 0.8  # Интервал между сдвигами фигуры в сторону
 WHITE = (255, 255, 255)
+
+
 
 # холст для таблицы
 width_ts = int(min(WIDTH, HEIGHT) * 0.6)
@@ -23,15 +25,16 @@ height_ts = int(min(WIDTH, HEIGHT) * 0.9)
 player_nickname = ''  # Переменная для хранения введённого ника
 score = 0  # Переменная для очков
 screen = None  # Переменная для основного окна
+difficulty = 1  # Сложность
+EVENT_FALL = pg.USEREVENT + 1  # Создание событий и
+EVENT_SHIFT = pg.USEREVENT + 2
 
 
 def start_game():
     global score
     t = Tetris((B_WIDTH, B_HEIGHT))
-    EVENT_FALL = pg.USEREVENT + 1  # Создание событий и постановка таймера их обновления
-    pg.time.set_timer(EVENT_FALL, int(TIME_FALL * 1000))
-    EVENT_SHIFT = pg.USEREVENT + 2
-    pg.time.set_timer(EVENT_SHIFT, int(TIME_SHIFT * 1000))
+    pg.time.set_timer(EVENT_FALL, int(TIME_FALL * 1000 / difficulty))  # Установка таймера вызова искусственных событий
+    pg.time.set_timer(EVENT_SHIFT, int(TIME_SHIFT * 1000 / difficulty))
 
     t.set_view(min(width_ts // B_WIDTH, height_ts // B_HEIGHT))
     static_surface = render_static_surface()
@@ -47,11 +50,15 @@ def start_game():
                     t.field.shift_side += 1
                 elif event.key in [pg.K_UP, pg.K_w]:
                     t.field.figure_rotate()
+                elif event.key in [pg.K_DOWN, pg.K_s]:
+                    pg.time.set_timer(EVENT_FALL, int(TIME_FALL * 1000 / difficulty / 2))
             if event.type == pg.KEYUP:  # Отпускание
                 if event.key in [pg.K_LEFT, pg.K_a]:
                     t.field.shift_side += 1
                 elif event.key in [pg.K_RIGHT, pg.K_d]:
                     t.field.shift_side -= 1
+                elif event.key in [pg.K_DOWN, pg.K_s]:
+                    pg.time.set_timer(EVENT_FALL, int(TIME_FALL * 1000 / difficulty))
             if event.type == EVENT_SHIFT:
                 t.field.figure_shift()
             if event.type == EVENT_FALL:  # Периодическое падение блоков
@@ -62,6 +69,8 @@ def start_game():
                 pp(t.field.board_fixed)  # Отображение таблицы в консоли(ТЕСТ) TODO Убрать тест
 
         if t.field.over:
+            pg.time.set_timer(EVENT_FALL, 0)  # Остановка воспроизводства событий
+            pg.time.set_timer(EVENT_SHIFT, 0)
             score_screen()
             break
         screen.blit(static_surface, (0, 0))
@@ -106,10 +115,7 @@ def render_next_tetromino(surface, name_picture_tetromino):  # Следующа�
     surface.blit(text, (text_x, text_y))
 
 
-def score_screen():  # Окно с выводом ников и очков игроков
-    global conn
-
-    # Меню для запроса ника игрока
+def score_screen():  # Меню для запроса ника игрока
     menu = pygame_menu.Menu("Введите Ник", screen.get_width(), screen.get_height(), theme=pygame_menu.themes.THEME_DARK)
     menu.add.text_input("Ник: ", default="", onchange=set_nickname)
     menu.add.button("Отправить", view_scoreboard)
@@ -156,11 +162,18 @@ def view_scoreboard():
     conn.close()
 
 
+def set_difficulty(value, difclty):
+    global difficulty
+    difficulty = difclty
+    pass
+
+
 def start_menu():
-    menu = pygame_menu.Menu('Tetris', WIDTH, HEIGHT,
+    menu = pygame_menu.Menu('Sirtet', WIDTH, HEIGHT,
                             theme=pygame_menu.themes.THEME_DARK)
 
     menu.add.button('Играть', start_game)
+    menu.add.selector('Difficulty :', [('Easy', 1), ('Normal', 2), ('Hard', 3)], onchange=set_difficulty)
     menu.add.button('Таблица лидеров', view_scoreboard)
     menu.add.button('Выход', pygame_menu.events.EXIT)
     menu.mainloop(screen)
@@ -172,7 +185,7 @@ def main():
     score = 0
     pg.init()
     screen = pg.display.set_mode(SIZE)
-    pg.display.set_caption('Tetris')
+    pg.display.set_caption('Sirtet')
     start_menu()
     score_screen()
 
