@@ -4,8 +4,11 @@ import sys
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-COLOR_BACKGROUND = (30, 34, 48)
-COLOR_FIGURE = (167, 178, 217)
+COLOR_BACKGROUND = '#2F3741'
+COLOR_FIELD_BACKGROUND = '#323B47'
+COLOR_FIGURE = '#AFB8C5'
+COLOR_FIGURE_BORDERS = '#2F3741'
+COLOR_FIELD_BORDERS = '#A0AFC5'
 
 def load_image(name, colorkey=None):  # Загрузить изображение из папки data
     fullname = os.path.join('data', name)

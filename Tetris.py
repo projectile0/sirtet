@@ -2,7 +2,7 @@ from random import choice, randint
 
 import pygame as pg
 
-from utils import COLOR_FIGURE, COLOR_BACKGROUND
+from utils import COLOR_FIGURE, COLOR_FIGURE_BORDERS, COLOR_FIELD_BORDERS, COLOR_FIELD_BACKGROUND
 
 
 class Tetris:
@@ -16,19 +16,23 @@ class Tetris:
         self.cell_size = cell_size
 
     def render(self, screen):
-        screen.fill(COLOR_BACKGROUND)
+        screen.fill(COLOR_FIELD_BACKGROUND)
         for y in range(self.field.height):
             for x in range(self.field.width):
                 cell_value = self.field.board_fixed[y][x]
                 if cell_value == 0:
-                    pg.draw.rect(screen, COLOR_FIGURE,
+                    pg.draw.rect(screen, COLOR_FIELD_BORDERS,
                                  (self.cell_size * x, self.cell_size * y, self.cell_size, self.cell_size), 1)
                 elif cell_value == 1:
                     pg.draw.rect(screen, COLOR_FIGURE,
                                  (self.cell_size * x, self.cell_size * y, self.cell_size, self.cell_size))
-        f_x, f_y = self.field.figure_center # Центр фигуры
-        for x, y in self.field.all_turns[self.field.cur_figure_turn]: # Отрисовка падающей фигуры
-            pg.draw.rect(screen, COLOR_FIGURE, (self.cell_size * (x + f_x), self.cell_size * (y + f_y), self.cell_size, self.cell_size))
+        f_x, f_y = self.field.figure_center  # Центр фигуры
+        for x, y in self.field.all_turns[self.field.cur_figure_turn]:  # Отрисовка падающей фигуры
+            pg.draw.rect(screen, COLOR_FIGURE,
+                         (self.cell_size * (x + f_x), self.cell_size * (y + f_y), self.cell_size, self.cell_size))
+            pg.draw.rect(screen, COLOR_FIGURE_BORDERS, (
+                self.cell_size * (x + f_x) - 1, self.cell_size * (y + f_y) - 1, self.cell_size + 2, self.cell_size + 2),
+                         2)
 
 
 class Field:  # Класс поля
