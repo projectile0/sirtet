@@ -1,5 +1,29 @@
 from random import choice, randint
 
+import pygame as pg
+
+from utils import WHITE
+
+
+class Tetris:
+    def __init__(self, f_size=(10, 15)):
+        self.field = Field(f_size) # Создание поля
+
+        # значения по умолчанию
+        self.cell_size = 30
+
+    # Параметры
+    def set_view(self, cell_size):
+        self.cell_size = cell_size
+
+    def render(self, screen):
+        for y in range(self.field.height):
+            for x in range(self.field.width):
+                pg.draw.rect(screen, WHITE,
+                             (self.cell_size * x,
+                              self.cell_size * y,
+                              self.cell_size, self.cell_size), 1)
+
 
 class Field:  # Класс поля
     shapes = list({
@@ -18,7 +42,7 @@ class Field:  # Класс поля
     # Названия всех вариантов фигур со всеми вариантами расположения,
     # первым считать вертикальное положение "головой" вверх
 
-    def __init__(self, size=(10, 15)):
+    def __init__(self, size):
         self.points = 0  # очки
         self.size = self.width, self.height = size  # размеры
         if self.width < 4 or self.height < 5:  # проверка на слишком маленькие параметры поля

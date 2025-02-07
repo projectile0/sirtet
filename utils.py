@@ -2,6 +2,8 @@ import os
 import pygame as pg
 import sys
 
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 def load_image(name, colorkey=None):  # Загрузить изображение из папки data
     fullname = os.path.join('data', name)
