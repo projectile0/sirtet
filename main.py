@@ -71,6 +71,53 @@ def start_game():
             pg.time.Clock().tick(FPS)
 
 
+class Board:
+    # создание поля
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.board = [[0] * width for _ in range(height)]
+        # значения по умолчанию
+        self.left = 10
+        self.top = 10
+        self.cell_size = 30
+
+    # настройка внешнего вида
+    def set_view(self, left, top, cell_size):
+        self.left = left
+        self.top = top
+        self.cell_size = cell_size
+
+    def get_cell(self, mouse_pos):
+        mouse_x, mouse_y = mouse_pos
+        cell_x = (mouse_x - self.left) // self.cell_size
+        cell_y = (mouse_y - self.top) // self.cell_size
+        if 0 <= cell_x < self.width and 0 <= cell_y < self.height:
+            return cell_x, cell_y
+        return None
+
+    def on_click(self, cell_coords):
+        x, y = cell_coords
+        self.board[y][x] = not self.board[y][x]
+
+    def get_click(self, mouse_pos):
+        if self.get_cell(mouse_pos):
+            self.on_click(self.get_cell(mouse_pos))
+
+
+    def render(self, screen):
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[y][x] == 0:
+                    pygame.draw.rect(screen, WHITE,
+                                     (self.left + self.cell_size * x,
+                                      self.top + self.cell_size * y,
+                                      self.cell_size, self.cell_size), 1)
+                elif self.board[y][x] == 1:
+                    pygame.draw.rect(screen, WHITE,
+                                     (self.left + self.cell_size * x,
+                                      self.top + self.cell_size * y,
+                                      self.cell_size, self.cell_size))
 
 
 def render_game_name():    # Название Игры
