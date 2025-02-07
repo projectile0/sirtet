@@ -21,7 +21,6 @@ surface_game = pg.Surface((width_ts, height_ts))
 surface_game.fill('Black')
 
 def start_game():
-    points = 0  # Очки
     t = Tetris((B_WIDTH, B_HEIGHT))
     EVENT_FALL = pg.USEREVENT + 1  # Создание событий и постановка таймера их обновления
     pg.time.set_timer(EVENT_FALL, int(TIME_FALL * 1000))
@@ -68,7 +67,7 @@ def start_game():
 
 def render_game_name():    # Название Игры
     font = pg.font.Font(None, 50)
-    text = font.render("Tetris", True, ('Green'))
+    text = font.render("Tetris", True, 'Green')
     text_x = 490 - text.get_width() // 2
     text_y = 100 - text.get_height() // 2
     screen.blit(text, (text_x, text_y))
@@ -76,6 +75,8 @@ def render_game_name():    # Название Игры
 
 def main():
     global screen
+    global points
+    points = 0
     pg.init()
     screen = pg.display.set_mode(SIZE)
     start_game()
