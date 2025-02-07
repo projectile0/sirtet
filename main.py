@@ -15,13 +15,14 @@ FPS = 25  # Кадры в секунду
 TIME_FALL = 0.7  # Интервал между обновлением таблицы в секундах
 TIME_SHIFT = 0.4  # Интервал между сдвигами фигуры в сторону
 SCORE = 999
-
+WHITE = (255, 255, 255)
 
 # холст для таблицы
 width_ts = int(min(WIDTH, HEIGHT) * 0.6)
 height_ts = int(min(WIDTH, HEIGHT) * 0.9)
 surface_game = pg.Surface((width_ts, height_ts))
 surface_game.fill('Black')
+
 
 def start_game():
     points = 0  # Очки
@@ -30,6 +31,7 @@ def start_game():
     pg.time.set_timer(EVENT_FALL, int(TIME_FALL * 1000))
     EVENT_SHIFT = pg.USEREVENT + 2
     pg.time.set_timer(EVENT_SHIFT, int(TIME_SHIFT * 1000))
+
 
     t.set_view(min(width_ts // B_WIDTH, height_ts // B_HEIGHT))
     im_background = load_image('background.jpg')
@@ -61,6 +63,8 @@ def start_game():
 
             screen.blit(im_background, (-25, 0))
             render_game_name()
+            score(im_background, points)
+            next_tetromino(im_background, None)  # Вместо None, вставляем переменную, в которой хранится фигура
             screen.blit(surface_game, (0, 0))
             t.render(surface_game)
             pg.display.flip()
@@ -73,8 +77,25 @@ def render_game_name():    # Название Игры
     font = pg.font.Font(None, 50)
     text = font.render("Tetris", True, ('Green'))
     text_x = 490 - text.get_width() // 2
-    text_y = 100 - text.get_height() // 2
+    text_y = 50 - text.get_height() // 2
     screen.blit(text, (text_x, text_y))
+
+
+def score(surface_static, points):    # Счет игры
+    font = pg.font.Font(None, 35)
+    text = font.render(f"Score: ", True, ('White'))
+    text_x = 857 - text.get_width() // 2
+    text_y = 50 - text.get_height() // 2
+    surface_static.blit(text, (text_x, text_y))
+
+
+def next_tetromino(surface_static, name_picture_tetromino):    # Следующая фигура
+    font = pg.font.Font(None, 35)
+    text = font.render(f"Next: {name_picture_tetromino}", True, ('White'))
+    text_x = 857 - text.get_width() // 2
+    text_y = 650 - text.get_height() // 2
+    surface_static.blit(text, (text_x, text_y))
+
 
 def score_screen(screen):  # Окно с выводом ников и очков игроков'
     # Инициализация базы данных внутри функции
@@ -136,12 +157,23 @@ def score_screen(screen):  # Окно с выводом ников и очков
 
     conn.close()
 
+
+def start_menu():
+    menu = pygame_menu.Menu('Сыграй в нашу игру!', WIDTH, HEIGHT,
+                            theme=pygame_menu.themes.THEME_DARK)
+
+    menu.add.button('Играть', start_game)
+    menu.add.button('Выход', pygame_menu.events.EXIT)
+    menu.mainloop(screen)
+
+
 def main():
     global screen
     pg.init()
     screen = pg.display.set_mode(SIZE)
-    start_game()
+    start_menu()
     score_screen(screen)
+
 
 if __name__ == '__main__':
     main()
