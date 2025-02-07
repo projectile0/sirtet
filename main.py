@@ -2,11 +2,12 @@ import sqlite3
 from pprint import pp
 
 import pygame as pg
+import pygame.display
 import pygame_menu
 
 from Tetris import Tetris
 from database import *
-from utils import terminate, COLOR_BACKGROUND
+from utils import terminate, COLOR_BACKGROUND, load_image
 
 # Параметры экрана
 WIDTH, HEIGHT = SIZE = 960, 720
@@ -178,6 +179,9 @@ def start_menu():
     menu.add.button('Выход', pygame_menu.events.EXIT)
     menu.mainloop(screen)
 
+def set_icon():
+    icon = load_image('icon.png')
+    pygame.display.set_icon(icon)
 
 def main():
     global screen
@@ -186,6 +190,7 @@ def main():
     pg.init()
     screen = pg.display.set_mode(SIZE)
     pg.display.set_caption('Sirtet')
+    set_icon()
     start_menu()
     score_screen()
 
