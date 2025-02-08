@@ -1,5 +1,4 @@
 import sqlite3
-from pprint import pp
 
 import pygame as pg
 import pygame.display
@@ -7,7 +6,7 @@ import pygame_menu
 
 from Tetris import Tetris
 from database import *
-from utils import terminate, load_image, COLOR_TEXT, COLOR_BACKGROUND
+from utils import terminate, load_image, COLOR_TEXT, COLOR_BACKGROUND, COLOR_FIELD_BORDERS
 
 FONT_NAME = pygame_menu.font.FONT_MUNRO
 # Параметры экрана
@@ -112,6 +111,7 @@ def render_static_surface():
 def render_text_gameover():
     surf = pg.Surface((WIDTH, HEIGHT // 4))
     surf.fill(COLOR_BACKGROUND)
+    pg.draw.rect(surf, COLOR_TEXT, (0, 0, WIDTH, HEIGHT // 4), 2)
 
     font = pg.font.Font(FONT_NAME, int(min(WIDTH, HEIGHT) * 0.2))
     text = font.render('GAME OVER', True, COLOR_TEXT)

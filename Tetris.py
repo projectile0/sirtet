@@ -3,6 +3,7 @@ from random import choice, randint
 import pygame as pg
 
 from utils import COLOR_FIGURE, COLOR_FIGURE_BORDERS, COLOR_FIELD_BORDERS, COLOR_FIELD_BACKGROUND
+from utils import get_frames
 
 
 class Tetris:
@@ -10,6 +11,12 @@ class Tetris:
         self.field = Field(f_size)  # Создание поля
         # значения по умолчанию
         self.cell_size = 30
+        self.all_sprites = pg.sprite.Group()
+        self.frames_flames = get_frames('flame_frames')
+        self.flames = []
+        for i in range(4):
+            self.flames.append(Flame(self.cell_size, (0, 0), self.frames_flames,
+                  self.all_sprites))
 
     # Параметры
     def set_view(self, cell_size):
@@ -17,7 +24,8 @@ class Tetris:
 
     def render(self, screen):
         screen.fill(COLOR_FIELD_BACKGROUND)
-        for y in range(self.field.height):
+        f_x, f_y = self.field.figure_center  # Центр фигуры
+        for y in range(self.field.height):  # Отрисовка статичного поля
             for x in range(self.field.width):
                 cell_value = self.field.board_fixed[y][x]
                 if cell_value == 0:
@@ -26,8 +34,13 @@ class Tetris:
                 elif cell_value == 1:
                     pg.draw.rect(screen, COLOR_FIGURE,
                                  (self.cell_size * x, self.cell_size * y, self.cell_size, self.cell_size))
-        f_x, f_y = self.field.figure_center  # Центр фигуры
+        self.all_sprites.update()
+        self.all_sprites.draw(screen)
+        num = 0
         for x, y in self.field.all_turns[self.field.cur_figure_turn]:  # Отрисовка падающей фигуры
+            self.flames[num].rect.x = (x + f_x - 0.5) * self.cell_size
+            self.flames[num].rect.y = (y + f_y - 1.5) * self.cell_size
+            num += 1
             pg.draw.rect(screen, COLOR_FIGURE,
                          (self.cell_size * (x + f_x), self.cell_size * (y + f_y), self.cell_size, self.cell_size))
             pg.draw.rect(screen, COLOR_FIGURE_BORDERS, (
@@ -127,6 +140,21 @@ class Field:  # Класс поля
 
     def board_clear(self):  # Возвращает пустую таблицу
         return [[0] * self.width for _ in range(self.height)]
+
+
+class Flame(pg.sprite.Sprite):
+    def __init__(self, size, coords, frames, *group):
+        super().__init__(*group)
+        self.flame_frames = frames
+        self.cur_frame = 0
+        self.image = self.flame_frames[self.cur_frame]
+        self.image = pg.transform.scale(self.image, (size, size))
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(coords[0], coords[1])
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.flame_frames)
+        self.image = self.flame_frames[self.cur_frame]
 
 
 class OverlayError(Exception):
