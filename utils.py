@@ -9,6 +9,7 @@ COLOR_FIELD_BACKGROUND = '#323B47'
 COLOR_FIGURE = '#AFB8C5'
 COLOR_FIGURE_BORDERS = '#2F3741'
 COLOR_FIELD_BORDERS = '#A0AFC5'
+COLOR_TEXT = '#A9B2C7'
 
 def load_image(name, colorkey=None):  # Загрузить изображение из папки data
     fullname = os.path.join('data', name)

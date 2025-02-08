@@ -7,7 +7,7 @@ import pygame_menu
 
 from Tetris import Tetris
 from database import *
-from utils import terminate, COLOR_BACKGROUND, load_image
+from utils import terminate, load_image, COLOR_TEXT
 
 # Параметры экрана
 WIDTH, HEIGHT = SIZE = 960, 720
@@ -17,12 +17,11 @@ TIME_FALL = 1.4  # Интервал между обновлением табли
 TIME_SHIFT = 0.8  # Интервал между сдвигами фигуры в сторону
 WHITE = (255, 255, 255)
 
-
-
 # холст для таблицы
 width_ts = int(min(WIDTH, HEIGHT) * 0.6)
 height_ts = int(min(WIDTH, HEIGHT) * 0.9)
 
+# глобальные переменные
 player_nickname = ''  # Переменная для хранения введённого ника
 score = 0  # Переменная для очков
 screen = None  # Переменная для основного окна
@@ -64,6 +63,7 @@ def start_game():
                 t.field.figure_shift()
             if event.type == EVENT_FALL:  # Периодическое падение блоков
                 t.field.update()
+                score = t.field.score * difficulty
                 if t.field.over:
                     break
                 print(t.field.figure_center, t.field.cur_figure_turn)
@@ -75,45 +75,32 @@ def start_game():
             score_screen()
             break
         screen.blit(static_surface, (0, 0))
+        render_score()
         t.render(surface_game)
         surface_flipped_game = pg.transform.flip(surface_game, False, True)
         screen.blit(surface_flipped_game, (WIDTH * 0.1, HEIGHT * 0.05))
+
         pg.display.flip()
         pg.time.Clock().tick(FPS)
 
 
 def render_static_surface():
-    surf = pg.Surface((WIDTH, HEIGHT))
-    surf.fill(COLOR_BACKGROUND)
+    surf = load_image('background.jpg')
+    surf = pg.transform.scale(surf, (WIDTH, HEIGHT))
     render_game_name(surf)
-    render_game_name(surf)
-    render_score(surf, score)
-    render_next_tetromino(surf, None)  # Вместо None, вставляем переменную, в которой хранится фигура
     return surf
 
 
+def render_score():  # Отрисовка количества очков
+    font = pg.font.SysFont('ebrima', 75)
+    text = font.render(str(score), True, COLOR_TEXT)
+    screen.blit(text, (WIDTH * 0.6, HEIGHT * 0.08))
+
+
 def render_game_name(surface):  # Название Игры
-    font = pg.font.Font(None, 50)
-    text = font.render("Tetris", True, 'Green')
-    text_x = 490 - text.get_width() // 2
-    text_y = 50 - text.get_height() // 2
-    surface.blit(text, (text_x, text_y))
-
-
-def render_score(surface, score):  # Счет игры
-    font = pg.font.Font(None, 35)
-    text = font.render(f"Score: ", True, 'White')
-    text_x = 857 - text.get_width() // 2
-    text_y = 50 - text.get_height() // 2
-    surface.blit(text, (text_x, text_y))
-
-
-def render_next_tetromino(surface, name_picture_tetromino):  # Следующая фигура
-    font = pg.font.Font(None, 35)
-    text = font.render(f"Next: {name_picture_tetromino}", True, 'White')
-    text_x = 857 - text.get_width() // 2
-    text_y = 650 - text.get_height() // 2
-    surface.blit(text, (text_x, text_y))
+    font = pg.font.SysFont('ebrima', 75)
+    text = font.render('SIRTET', True, COLOR_TEXT)
+    surface.blit(text, (WIDTH * 0.6, HEIGHT * 0.8))
 
 
 def score_screen():  # Меню для запроса ника игрока
@@ -174,14 +161,16 @@ def start_menu():
                             theme=pygame_menu.themes.THEME_DARK)
 
     menu.add.button('Играть', start_game)
-    menu.add.selector('Difficulty :', [('Easy', 1), ('Normal', 2), ('Hard', 3)], onchange=set_difficulty)
+    menu.add.selector('Сложность :', [('Easy', 1), ('Normal', 2), ('Hard', 3), ('Extra', 4)], onchange=set_difficulty)
     menu.add.button('Таблица лидеров', view_scoreboard)
     menu.add.button('Выход', pygame_menu.events.EXIT)
     menu.mainloop(screen)
 
+
 def set_icon():
     icon = load_image('icon.png')
     pygame.display.set_icon(icon)
+
 
 def main():
     global screen
