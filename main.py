@@ -7,8 +7,9 @@ import pygame_menu
 
 from Tetris import Tetris
 from database import *
-from utils import terminate, load_image, COLOR_TEXT
+from utils import terminate, load_image, COLOR_TEXT, COLOR_BACKGROUND
 
+FONT_NAME = pygame_menu.font.FONT_MUNRO
 # Параметры экрана
 WIDTH, HEIGHT = SIZE = 960, 720
 B_WIDTH, B_HEIGHT = B_SIZE = 10, 15
@@ -16,6 +17,10 @@ FPS = 30  # Кадры в секунду
 TIME_FALL = 1.4  # Интервал между обновлением таблицы в секундах
 TIME_SHIFT = 0.8  # Интервал между сдвигами фигуры в сторону
 WHITE = (255, 255, 255)
+
+# Тема для меню
+game_theme = pygame_menu.themes.THEME_DARK.copy()
+game_theme.background_color = COLOR_BACKGROUND
 
 # холст для таблицы
 width_ts = int(min(WIDTH, HEIGHT) * 0.6)
@@ -66,22 +71,36 @@ def start_game():
                 score = t.field.score * difficulty
                 if t.field.over:
                     break
-                print(t.field.figure_center, t.field.cur_figure_turn)
-                pp(t.field.board_fixed)  # Отображение таблицы в консоли(ТЕСТ) TODO Убрать тест
 
-        if t.field.over:
+        if not t.field.over:
+            screen.blit(static_surface, (0, 0))
+            render_score()
+            t.render(surface_game)
+            surface_flipped_game = pg.transform.flip(surface_game, False, True)
+            screen.blit(surface_flipped_game, (WIDTH * 0.1, HEIGHT * 0.05))
+            pg.display.flip()
+            pg.time.Clock().tick(FPS)
+        else: # при поражении
             pg.time.set_timer(EVENT_FALL, 0)  # Остановка воспроизводства событий
             pg.time.set_timer(EVENT_SHIFT, 0)
+            out = 0
+            render_text_gameover()
+            pg.display.flip()
+            while True:
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:  # Выход
+                        terminate()
+                    if event.type == pg.KEYDOWN:
+                        out = 1
+                        break
+                if out:
+                    break
+                pg.time.Clock().tick(FPS)
             score_screen()
             break
-        screen.blit(static_surface, (0, 0))
-        render_score()
-        t.render(surface_game)
-        surface_flipped_game = pg.transform.flip(surface_game, False, True)
-        screen.blit(surface_flipped_game, (WIDTH * 0.1, HEIGHT * 0.05))
 
-        pg.display.flip()
-        pg.time.Clock().tick(FPS)
+
+
 
 
 def render_static_surface():
@@ -90,21 +109,36 @@ def render_static_surface():
     render_game_name(surf)
     return surf
 
+def render_text_gameover():
+    surf = pg.Surface((WIDTH, HEIGHT // 4))
+    surf.fill(COLOR_BACKGROUND)
+
+    font = pg.font.Font(FONT_NAME, int(min(WIDTH, HEIGHT) * 0.2))
+    text = font.render('GAME OVER', True, COLOR_TEXT)
+    surf.blit(text, (WIDTH * 0.2, HEIGHT // 25))
+
+    font = pg.font.Font(FONT_NAME, int(min(WIDTH, HEIGHT) * 0.05))
+    text = font.render('Press any button', True, COLOR_TEXT)
+    surf.blit(text, (WIDTH * 0.35, HEIGHT // 64 * 13))
+
+    screen.blit(surf, (0, HEIGHT // 5 * 2))
+
 
 def render_score():  # Отрисовка количества очков
-    font = pg.font.SysFont('ebrima', 75)
+    font = pg.font.Font(FONT_NAME, 140)
     text = font.render(str(score), True, COLOR_TEXT)
     screen.blit(text, (WIDTH * 0.6, HEIGHT * 0.08))
 
 
 def render_game_name(surface):  # Название Игры
-    font = pg.font.SysFont('ebrima', 75)
+    font = pg.font.Font(FONT_NAME, 140)
     text = font.render('SIRTET', True, COLOR_TEXT)
     surface.blit(text, (WIDTH * 0.6, HEIGHT * 0.8))
 
 
 def score_screen():  # Меню для запроса ника игрока
-    menu = pygame_menu.Menu("Введите Ник", screen.get_width(), screen.get_height(), theme=pygame_menu.themes.THEME_DARK)
+    menu = pygame_menu.Menu("Введите Ник", WIDTH, HEIGHT, theme=game_theme)
+    menu = pygame_menu.Menu("Введите Ник", WIDTH, HEIGHT, theme=game_theme)
     menu.add.text_input("Ник: ", default="", onchange=set_nickname)
     menu.add.button("Отправить", view_scoreboard)
     menu.add.button("Выход", pygame_menu.events.EXIT)
@@ -133,7 +167,7 @@ def view_scoreboard():
 
     # Меню для отображения таблицы лидеров
     leaderboard_menu = pygame_menu.Menu("Таблица лидеров", WIDTH, HEIGHT,
-                                        theme=pygame_menu.themes.THEME_DARK)
+                                        theme=game_theme)
     leaderboard_menu.add.label("ТОП 10", font_size=40)
     leaderboard_menu.add.vertical_margin(20)
 
@@ -158,7 +192,7 @@ def set_difficulty(value, difclty):
 
 def start_menu():
     menu = pygame_menu.Menu('Sirtet', WIDTH, HEIGHT,
-                            theme=pygame_menu.themes.THEME_DARK)
+                            theme=game_theme)
 
     menu.add.button('Играть', start_game)
     menu.add.selector('Сложность :', [('Easy', 1), ('Normal', 2), ('Hard', 3), ('Extra', 4)], onchange=set_difficulty)

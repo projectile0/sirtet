@@ -2,8 +2,8 @@ import os
 import pygame as pg
 import sys
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+COLOR_WHITE = (255, 255, 255)
+COLOR_BLACK = (0, 0, 0)
 COLOR_BACKGROUND = '#2F3741'
 COLOR_FIELD_BACKGROUND = '#323B47'
 COLOR_FIGURE = '#AFB8C5'
